@@ -1,0 +1,49 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Акции | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <div class="spaced">
+    <div>
+      <h1>Акции и скидки</h1>
+      <p class="muted">Управляйте маркетинговыми предложениями магазина.</p>
+    </div>
+    {% if request.user.is_authenticated %}
+      <a class="btn" href="{% url 'shop:promotion_add' %}">+ Добавить акцию</a>
+    {% endif %}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Скидка</th>
+        <th>Начало</th>
+        <th>Окончание</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in promotions %}
+        <tr>
+          <td>{{ p.title }}</td>
+          <td>{{ p.discount_percent }}%</td>
+          <td>{{ p.starts_at }}</td>
+          <td>{{ p.ends_at }}</td>
+          <td>
+            {% if request.user.is_authenticated %}
+              <a href="{% url 'shop:promotion_edit' p.pk %}">Редактировать</a> |
+              <a href="{% url 'shop:promotion_delete' p.pk %}">Удалить</a>
+            {% else %}
+              <span class="muted">Только просмотр</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">Акций пока нет.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

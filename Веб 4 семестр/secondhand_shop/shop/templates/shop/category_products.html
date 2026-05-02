@@ -1,0 +1,33 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ category }} | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <div class="spaced">
+    <div>
+      <h1>{{ category }}</h1>
+      <p class="muted">Все актуальные позиции в выбранной категории.</p>
+    </div>
+    <a class="btn btn-outline" href="{% url 'shop:catalog' %}">Все категории</a>
+  </div>
+</section>
+
+<section class="grid">
+  {% for p in products %}
+    <article class="product-card">
+      {% if p.photo %}
+        <img class="product-media" src="{{ p.photo.url }}" alt="{{ p.title }}">
+      {% else %}
+        <div class="product-media"></div>
+      {% endif %}
+      <div class="product-content">
+        <p class="product-title"><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></p>
+        <p class="price">{{ p.price }} ₽</p>
+      </div>
+    </article>
+  {% empty %}
+    <div class="card"><p>В этой категории пока нет товаров.</p></div>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ title }} | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <h1>{{ title }}</h1>
+  <p class="muted">Заполните карточку товара для публикации в каталоге.</p>
+  <form method="post" enctype="multipart/form-data" class="stack">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="actions">
+      <button class="btn" type="submit">{{ submit_label }}</button>
+      <a class="btn btn-outline" href="{% url 'shop:catalog' %}">Отмена</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Удаление акции | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <h1>Удаление акции</h1>
+  <p>Удалить акцию <strong>{{ promotion.title }}</strong>?</p>
+  <div class="actions">
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit">Удалить</button>
+    </form>
+    <a class="btn btn-outline" href="{% url 'shop:promotion_list' %}">Отмена</a>
+  </div>
+</section>
+{% endblock %}

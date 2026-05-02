@@ -1,0 +1,103 @@
+{% extends "shop/base.html" %}
+
+{% block title %}ORM и аналитика | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <h1>Техническая витрина ORM</h1>
+  <p class="muted">Страница для демонстрации возможностей ORM, дат и оптимизации запросов.</p>
+  <p><strong>Сейчас:</strong> {{ now }} · <strong>Сегодня:</strong> {{ today }}</p>
+</section>
+
+<section class="card stack">
+  <h2>Даты и бизнес-логика</h2>
+  <ul>
+    <li>Новинки за 14 дней: <strong>{{ new_arrivals_count }}</strong></li>
+    <li>Активные акции: <strong>{{ active_promotions|length }}</strong></li>
+    <li>Заказы за сегодня: <strong>{{ orders_today_count }}</strong></li>
+    <li>Кандидаты на скидку по складу: <strong>{{ discount_candidates|length }}</strong></li>
+  </ul>
+</section>
+
+<section class="card stack">
+  <h2>Аннотирование и агрегирование</h2>
+  <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <div>
+      <h3>Категории (Count)</h3>
+      <table>
+        <tr><th>Категория</th><th>Товаров</th></tr>
+        {% for row in category_with_counts %}
+          <tr><td>{{ row.name }}</td><td>{{ row.product_count }}</td></tr>
+        {% empty %}
+          <tr><td colspan="2">Нет данных</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div>
+      <h3>Бренды (Avg)</h3>
+      <table>
+        <tr><th>Бренд</th><th>Средняя цена</th></tr>
+        {% for row in brand_with_avg %}
+          <tr><td>{{ row.name }}</td><td>{{ row.avg_price|floatformat:2 }}</td></tr>
+        {% empty %}
+          <tr><td colspan="2">Нет данных</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <p><strong>Выручка (Sum):</strong> {{ revenue }}</p>
+</section>
+
+<section class="card stack">
+  <h2>ManyToMany через through и prefetch</h2>
+  <table>
+    <tr><th>Пользователь</th><th>Избранных товаров</th></tr>
+    {% for u in users_with_favorite_counts %}
+      <tr><td>{{ u.email }}</td><td>{{ u.favorites_count }}</td></tr>
+    {% empty %}
+      <tr><td colspan="2">Нет данных</td></tr>
+    {% endfor %}
+  </table>
+</section>
+
+<section class="card stack">
+  <h2>Django ORM: contains / values / count / exists / update / delete</h2>
+  <ul>
+    <li><code>title__contains='Демо'</code>: <strong>{{ contains_demo_count }}</strong></li>
+    <li><code>title__icontains='демо'</code>: <strong>{{ icontains_demo_count }}</strong></li>
+    <li><code>count()</code>: <strong>{{ products_total }}</strong></li>
+    <li><code>exists()</code> для активных акций: <strong>{{ has_active_promotions }}</strong></li>
+  </ul>
+  <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <div>
+      <h3>values()</h3>
+      <table>
+        <tr><th>ID</th><th>Название</th><th>Цена</th></tr>
+        {% for row in product_values %}
+          <tr><td>{{ row.id }}</td><td>{{ row.title }}</td><td>{{ row.price }}</td></tr>
+        {% empty %}
+          <tr><td colspan="3">Нет данных</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div>
+      <h3>values_list()</h3>
+      <ul>
+        {% for t in product_titles %}
+          <li>{{ t }}</li>
+        {% empty %}
+          <li>Нет данных</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <form method="post" action="{% url 'shop:orm_mutation_demo' %}" class="actions">
+    {% csrf_token %}
+    <button class="btn" type="submit">Запустить demo update() + delete()</button>
+  </form>
+  {% if request.GET.updated or request.GET.deleted %}
+    <p class="muted">Изменено товаров: {{ request.GET.updated|default:"0" }}, удалено акций: {{ request.GET.deleted|default:"0" }}</p>
+  {% endif %}
+</section>
+{% endblock %}

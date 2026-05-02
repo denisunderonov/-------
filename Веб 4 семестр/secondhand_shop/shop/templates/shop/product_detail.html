@@ -1,0 +1,71 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ product.title }} | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <div class="spaced">
+    <div>
+      <h1>{{ product.title }}</h1>
+      <p class="muted">{{ product.brand }} · {{ product.category }} · Продавец: {{ product.seller.email }}</p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-outline" href="{% url 'shop:catalog' %}">Назад в каталог</a>
+      {% if request.user.is_authenticated %}
+        <a class="btn btn-outline" href="{% url 'shop:product_edit' product.pk %}">Редактировать</a>
+        <a class="btn btn-danger" href="{% url 'shop:product_delete' product.pk %}">Удалить</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns: minmax(280px, 360px) 1fr;">
+    <div>
+      {% if product.photo %}
+        <img class="product-media" style="height: 280px; border-radius: 12px; border: 1px solid var(--border);" src="{{ product.photo.url }}" alt="{{ product.title }}">
+      {% else %}
+        <div class="product-media" style="height: 280px; border-radius: 12px;"></div>
+      {% endif %}
+    </div>
+    <div class="stack">
+      <p class="price" style="font-size: 1.35rem;">{{ product.price }} ₽</p>
+      <p>{{ product.description|default:"Описание пока не заполнено." }}</p>
+      <p><span class="chip">Состояние: {{ product.get_condition_display }}</span> <span class="chip">Хранение: {{ product.get_storage_tier_display }}</span></p>
+      <p class="muted">Размещён: {{ product.created_at }}</p>
+      {% if product.warehouse_received_at %}
+        <p class="muted">На складе с {{ product.warehouse_received_at }} · {{ product.days_on_shelf }} дней</p>
+      {% endif %}
+      <div class="actions">
+        {% if product.quality_report %}
+          <a class="btn btn-outline" href="{{ product.quality_report.url }}">Скачать акт качества</a>
+        {% endif %}
+        {% if product.source_url %}
+          <a class="btn btn-outline" href="{{ product.source_url }}" target="_blank" rel="noopener noreferrer">Источник</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="grid" style="grid-template-columns: 1fr 1fr;">
+  <article class="card">
+    <h2 class="section-title">Ещё от этого продавца</h2>
+    <ul>
+      {% for p in other_by_seller %}
+        <li><a href="{{ p.get_absolute_url }}">{{ p }}</a> — {{ p.price }} ₽</li>
+      {% empty %}
+        <li>Других лотов пока нет.</li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="card">
+    <h2 class="section-title">Похожие в категории</h2>
+    <ul>
+      {% for p in other_in_category %}
+        <li><a href="{{ p.get_absolute_url }}">{{ p }}</a> — {{ p.price }} ₽</li>
+      {% empty %}
+        <li>Похожих товаров пока нет.</li>
+      {% endfor %}
+    </ul>
+  </article>
+</section>
+{% endblock %}

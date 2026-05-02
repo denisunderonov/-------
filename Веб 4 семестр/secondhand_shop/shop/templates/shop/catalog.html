@@ -1,0 +1,60 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Каталог | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <div class="spaced">
+    <div>
+      <h1>Каталог секонд-хенд</h1>
+      <p class="muted">Подбирайте вещи по цене, бренду и категории. Все карточки ведут на детальную страницу товара.</p>
+    </div>
+    <a class="btn" href="{% url 'shop:product_add' %}">+ Добавить товар</a>
+  </div>
+  <form method="get" class="form-grid">
+    <p>
+      <label>Email продавца</label>
+      <input type="text" name="seller_email" value="{{ request.GET.seller_email }}" placeholder="seller@example.com">
+    </p>
+    <p>
+      <label>Категория</label>
+      <select name="category">
+        <option value="">Все категории</option>
+        {% for c in categories %}
+          <option value="{{ c.pk }}" {% if request.GET.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <label>&nbsp;</label>
+      <button class="btn" type="submit">Применить фильтры</button>
+    </p>
+  </form>
+</section>
+
+<section class="grid">
+  {% for p in products %}
+    <article class="product-card">
+      {% if p.photo %}
+        <img class="product-media" src="{{ p.photo.url }}" alt="{{ p.title }}">
+      {% else %}
+        <div class="product-media"></div>
+      {% endif %}
+      <div class="product-content">
+        <p class="product-title"><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></p>
+        <p class="price">{{ p.price }} ₽</p>
+        <p class="meta">{{ p.brand }} · {{ p.category }}</p>
+        <p class="meta">Продавец: {{ p.seller.email }}</p>
+        <div class="actions" style="margin-top: .6rem;">
+          <a class="btn btn-outline" href="{{ p.get_absolute_url }}">Открыть</a>
+          {% if request.user.is_authenticated %}
+            <a class="btn btn-outline" href="{% url 'shop:product_edit' p.pk %}">Изменить</a>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  {% empty %}
+    <div class="card"><p>По текущим фильтрам товаров не найдено.</p></div>
+  {% endfor %}
+</section>
+{% endblock %}

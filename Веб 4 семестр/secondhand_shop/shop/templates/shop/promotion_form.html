@@ -1,0 +1,17 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ title }} | Secondhand Shop{% endblock %}
+
+{% block content %}
+<section class="card stack">
+  <h1>{{ title }}</h1>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="actions">
+      <button class="btn" type="submit">{{ submit_label }}</button>
+      <a class="btn btn-outline" href="{% url 'shop:promotion_list' %}">Отмена</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
